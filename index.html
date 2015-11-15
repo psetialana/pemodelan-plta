@@ -6,7 +6,7 @@
     </head>
     <body>
         <div>
-            Debit Sungai : <input id="sungai" type="text">
+            Debit Sungai : <input id="sungai" type="text" onkeydown="if (event.keyCode == 13) document.getElementById('tambah').click()">
             <button id="tambah">Tambah Data</button>
         </div>
         <div id="debit_sungai" style="width: 100%; height: 400px;"></div>
@@ -16,15 +16,22 @@
     </body>
     <script>
     $(function () {
+
+        var chartSungai;
         var debitSungai;
+
+        var iSungai = 1;
+
         $(document).ready(function () {
-            debitSungai = $('#debit_sungai').highcharts({
+           $('#debit_sungai').highcharts({
                 chart: {
                     type: 'spline',
                     animation: Highcharts.svg, // don't animate in old IE
                     marginRight: 10,
                     events: {
-                        load: function () {}
+                        load: function () {
+                            chartSungai = this;
+                        }
                     }
                 },
                 title: {
@@ -60,6 +67,13 @@
                     name: "Debit"
                 }]
             });
+
+            $('#tambah').click(function() {
+                debitSungai = parseFloat($('#sungai').val());
+                chartSungai.series[0].addPoint([iSungai, debitSungai], true);
+                iSungai++;
+            });
+            
         });
     });
     </script>
