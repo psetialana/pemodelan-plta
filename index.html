@@ -10,7 +10,7 @@
             <button id="tambah">Tambah Data</button>
         </div>
         <div id="debit_sungai" style="width: 100%; height: 400px;"></div>
-        <div id="debit_generator" style="width: 100%; height: 400px;"></div>
+        <div id="debit_pembangkit" style="width: 100%; height: 400px;"></div>
         <div id="debit_buang" style="width: 100%; height: 400px;"></div>
         <div id="daya" style="width: 100%; height: 400px;"></div>
     </body>
@@ -18,6 +18,9 @@
     $(function () {
 
         var chartSungai;
+        var chartPembangkit;
+        var chartBuang;
+        var chartDaya;
         var debitSungai;
 
         var iSungai = 1;
@@ -65,6 +68,141 @@
                 },
                 series: [{
                     name: "Debit"
+                }]
+            });
+
+            $('#debit_pembangkit').highcharts({
+                chart: {
+                    type: 'spline',
+                    animation: Highcharts.svg, // don't animate in old IE
+                    marginRight: 10,
+                    events: {
+                        load: function () {
+                            chartPembangkit = this;
+                        }
+                    }
+                },
+                title: {
+                    text: 'Debit Pembangkit'
+                },
+                xAxis: {
+                    //tickPixelInterval: 1
+                },
+                yAxis: {
+                    title: {
+                        text: 'Debit'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.numberFormat(this.x, 0) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                series: [{
+                    name: "Debit"
+                }]
+            });
+
+            $('#debit_buang').highcharts({
+                chart: {
+                    type: 'spline',
+                    animation: Highcharts.svg, // don't animate in old IE
+                    marginRight: 10,
+                    events: {
+                        load: function () {
+                            chartBuang = this;
+                        }
+                    }
+                },
+                title: {
+                    text: 'Debit Pembuangan'
+                },
+                xAxis: {
+                    //tickPixelInterval: 1
+                },
+                yAxis: {
+                    title: {
+                        text: 'Debit'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.numberFormat(this.x, 0) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                series: [{
+                    name: "Debit"
+                }]
+            });
+
+            $('#daya').highcharts({
+                chart: {
+                    type: 'spline',
+                    animation: Highcharts.svg, // don't animate in old IE
+                    marginRight: 10,
+                    events: {
+                        load: function () {
+                            chartDaya = this;
+                        }
+                    }
+                },
+                title: {
+                    text: 'Daya Pembangkit'
+                },
+                xAxis: {
+                    //tickPixelInterval: 1
+                },
+                yAxis: {
+                    title: {
+                        text: 'Daya'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.numberFormat(this.x, 0) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                series: [{
+                    name: "Daya"
                 }]
             });
 
