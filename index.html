@@ -14,4 +14,53 @@
         <div id="debit_buang" style="width: 100%; height: 400px;"></div>
         <div id="daya" style="width: 100%; height: 400px;"></div>
     </body>
+    <script>
+    $(function () {
+        var debitSungai;
+        $(document).ready(function () {
+            debitSungai = $('#debit_sungai').highcharts({
+                chart: {
+                    type: 'spline',
+                    animation: Highcharts.svg, // don't animate in old IE
+                    marginRight: 10,
+                    events: {
+                        load: function () {}
+                    }
+                },
+                title: {
+                    text: 'Debit Sungai'
+                },
+                xAxis: {
+                    //tickPixelInterval: 1
+                },
+                yAxis: {
+                    title: {
+                        text: 'Debit'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.numberFormat(this.x, 0) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                series: [{
+                    name: "Debit"
+                }]
+            });
+        });
+    });
+    </script>
 </html>
