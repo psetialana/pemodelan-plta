@@ -15,6 +15,7 @@
                     <td>i</td>
                     <td>Debit Sungai</td>
                     <td>Debit Pembangkit</td>
+                    <td>Jumlah Generator</td>
                     <td>Dibit Pembuangan</td>
                     <td>Daya Total (MW)</td>
                 </tr>
@@ -31,9 +32,11 @@
     $(function () {
 
         var MAX_DEBIT = 1080;
-        var DIAMETER = 112.5;
+        var DEBIT_PEMB = 135;
+        var TINGGI = 112.5;
         var GRAVITASI = 9.8;
         var RHO = 1000;
+        var generator = 8;
 
         var chartSungai;
         var chartPembangkit;
@@ -42,7 +45,7 @@
         var debitSungai;
         var arrData = new Array();
 
-        var index = 0;
+        var index = 1;
 
         $(document).ready(function () {
            $('#debit_sungai').highcharts({
@@ -242,8 +245,56 @@
                 }
             }
 
-            function daya(debit) {
-                return RHO*debitPembangkit(debit)*DIAMETER*GRAVITASI;
+            function dayaIn(debit) {
+                return (RHO*debit*TINGGI*GRAVITASI)/1000000;
+            }
+
+            function dayaOut(dayaIn) {
+                return dayaIn*0.87;
+            }
+
+            function nonNegative(val) {
+                if (val<0) {
+                    return 0;
+                } else  {
+                    return val;
+                }
+            }
+
+            function semua(debit) {
+                if (debit>=MAX_DEBIT) {
+                    generator = 8;
+                    debitBuang = nonNegative(debit - MAX_DEBIT);
+                    debitPembangkit = MAX_DEBIT;
+                } else if (debit<MAX_DEBIT) {
+                    generator = debit/DEBIT_PEMB | 0;
+                    debitPembangkit = generator*DEBIT_PEMB;
+                    debitBuang = nonNegative(debit - debitPembangkit);
+                }
+
+                dIn = dayaIn(debitPembangkit);
+                dOut = dayaOut(dIn);
+
+                var data = {};
+                data["debitSungai"] = debit;
+                data["debitBuang"] = debitBuang;
+                data["debitPembangkit"] = debitPembangkit;
+                data["dayaIn"] = dIn;
+                data["dayaOut"] = dOut;
+                data["generator"] = generator;
+                arrData.push(data);
+
+                var rows = "";
+
+                rows += "<tr><td>" + index + "</td><td>" + data["debitSungai"] + "</td><td>" + data["debitPembangkit"] + "</td><td>" + data["generator"] + "</td><td>" + data["debitBuang"]+ "</td><td>" + data["dayaOut"] + "</td></tr>";
+
+                $( rows ).appendTo( "#itemList tbody" );
+
+                chartSungai.series[0].addPoint([index, debit], true);
+                chartBuang.series[0].addPoint([index, debitBuang], true);
+                chartPembangkit.series[0].addPoint([index, debitPembangkit], true);
+                chartDaya.series[0].addPoint([index, dOut], true);
+                index++;
             }
 
             function debitChartPembangkit(debit) {
@@ -275,12 +326,7 @@
 
             $('#tambah').click(function() {
                 debitSungai = parseFloat($('#sungai').val());
-                chartSungai.series[0].addPoint([index+1, debitSungai], true);
-                debitChartPembangkit(debitSungai);
-                debitChartBuang(debitSungai);
-                dayaChart(debitSungai);
-                index++;
-                tabel(debitSungai);
+                semua(debitSungai);
             });
             
         });
