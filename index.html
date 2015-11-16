@@ -9,6 +9,18 @@
             Debit Sungai : <input id="sungai" type="text" onkeydown="if (event.keyCode == 13) document.getElementById('tambah').click()">
             <button id="tambah">Tambah Data</button>
         </div>
+        <table id="itemList">
+            <thead>
+                <tr>
+                    <td>Debit Sungai</td>
+                    <td>Debit Pembangkit</td>
+                    <td>Dibit Pembuangan</td>
+                    <td>Daya Total (MW)</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
         <div id="debit_sungai" style="width: 100%; height: 400px;"></div>
         <div id="debit_pembangkit" style="width: 100%; height: 400px;"></div>
         <div id="debit_buang" style="width: 100%; height: 400px;"></div>
@@ -17,13 +29,19 @@
     <script>
     $(function () {
 
+        var MAX_DEBIT = 1080;
+        var DIAMETER = 112.5;
+        var GRAVITASI = 9.8;
+        var RHO = 1000;
+
         var chartSungai;
         var chartPembangkit;
         var chartBuang;
         var chartDaya;
         var debitSungai;
+        var arrData = new Array();
 
-        var iSungai = 1;
+        var index = 0;
 
         $(document).ready(function () {
            $('#debit_sungai').highcharts({
@@ -173,14 +191,14 @@
                     }
                 },
                 title: {
-                    text: 'Daya Pembangkit'
+                    text: 'Daya Pembangkit Total (MW)'
                 },
                 xAxis: {
                     //tickPixelInterval: 1
                 },
                 yAxis: {
                     title: {
-                        text: 'Daya'
+                        text: 'Daya (MW)'
                     },
                     plotLines: [{
                         value: 0,
@@ -206,10 +224,64 @@
                 }]
             });
 
+            function debitPembangkit(debit) {
+                if (debit>=MAX_DEBIT) {
+                    return MAX_DEBIT;
+                } else {
+                    return debit;
+                }
+            }
+
+            function debitBuang(debit) {
+                if (debit>=MAX_DEBIT) {
+                    var debitBuang = debit - MAX_DEBIT
+                    return debitBuang;
+                } else {
+                    return 0;
+                }
+            }
+
+            function daya(debit) {
+                return RHO*debitPembangkit(debit)*DIAMETER*GRAVITASI;
+            }
+
+            function debitChartPembangkit(debit) {
+                chartPembangkit.series[0].addPoint([index+1, debitPembangkit(debit)], true);
+            }
+
+            function debitChartBuang(debit) {
+                chartBuang.series[0].addPoint([index+1, debitBuang(debit)], true);
+            }
+
+            function dayaChart(debit) {
+                chartDaya.series[0].addPoint([index+1, daya(debit)/1000000], true);
+            }
+
+            function tabel(debit) {
+                var data = {};
+                data["debitSungai"] = debit;
+                data["debitBuang"] = debitBuang(debit);
+                data["debitPembangkit"] = debitPembangkit(debit);
+                data["daya"] = daya(debit);
+                arrData.push(data);
+
+                var rows = "";
+
+                $.each(arrData, function(){
+                    rows += "<tr><td>" + this.debitSungai + "</td><td>" + this.debitPembangkit + "</td><td>" + this.debitBuang+ "</td><td>" + this.daya + "</td></tr>";
+                });
+
+                $( rows ).appendTo( "#itemList tbody" );
+            }
+
             $('#tambah').click(function() {
                 debitSungai = parseFloat($('#sungai').val());
-                chartSungai.series[0].addPoint([iSungai, debitSungai], true);
-                iSungai++;
+                chartSungai.series[0].addPoint([index+1, debitSungai], true);
+                debitChartPembangkit(debitSungai);
+                debitChartBuang(debitSungai);
+                dayaChart(debitSungai);
+                tabel(debitSungai);
+                index++;
             });
             
         });
