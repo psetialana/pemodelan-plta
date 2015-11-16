@@ -12,6 +12,7 @@
         <table id="itemList">
             <thead>
                 <tr>
+                    <td>i</td>
                     <td>Debit Sungai</td>
                     <td>Debit Pembangkit</td>
                     <td>Dibit Pembuangan</td>
@@ -267,9 +268,7 @@
 
                 var rows = "";
 
-                $.each(arrData, function(){
-                    rows += "<tr><td>" + this.debitSungai + "</td><td>" + this.debitPembangkit + "</td><td>" + this.debitBuang+ "</td><td>" + this.daya + "</td></tr>";
-                });
+                rows += "<tr><td>" + index + "</td><td>" + data["debitSungai"] + "</td><td>" + data["debitPembangkit"] + "</td><td>" + data["debitBuang"]+ "</td><td>" + data["daya"] + "</td></tr>";
 
                 $( rows ).appendTo( "#itemList tbody" );
             }
@@ -280,8 +279,8 @@
                 debitChartPembangkit(debitSungai);
                 debitChartBuang(debitSungai);
                 dayaChart(debitSungai);
-                tabel(debitSungai);
                 index++;
+                tabel(debitSungai);
             });
             
         });
